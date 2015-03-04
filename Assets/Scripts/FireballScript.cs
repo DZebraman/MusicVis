@@ -91,9 +91,9 @@ public class FireballScript : MonoBehaviour {
 		conversion = spectrum.Length/(maxBalls/2);
 		float temp = 0;
 
-		for (int i = 0; i < maxBalls/2-1; i++) {
+		for (int i = 0; i < maxBalls/2; i++) {
 
-			for(int k = 0; k < maxBalls/2-1; k++){
+			for(int k = 0; k < maxBalls/2; k++){
 				if(k == 0){
 					temp = 0;
 					temp += spectrum[i];
@@ -150,11 +150,12 @@ public class FireballScript : MonoBehaviour {
 					
 					fireballsArray[i,k].transform.position = Vector3.Lerp(fireballsArray[i,k].transform.position,fireballsArray[i,k].transform.position + temp, Time.deltaTime * lerpSpeed);
 					
-					
+					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(temp.y, temp.y, temp.y), lerpSpeed);
 				}
 				else{
 					//if(i > 0)
 					fireballsArray[i,k].transform.position = Vector3.Lerp(fireballsArray[i,k].transform.position, new Vector3(fireballsArray[i,k].transform.position.x,fireballsArray[i,k-1].transform.position.y,fireballsArray[i,k].transform.position.z), 0.75f);
+					//fireballsArray[i,k].renderer.material.color = Color.Lerp(fireballsArray[i,k].renderer.material.color,fireballsArray[i,k-1].renderer.material.color, Time.deltaTime*lerpSpeed);
 				}
 					if (fireballsArray[i,k].transform.position.y - 2 < LowerBound)
 					fireballsArray[i,k].transform.position -= new Vector3(0,-16,0);
