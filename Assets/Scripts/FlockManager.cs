@@ -65,16 +65,6 @@ public class FlockManager : MonoBehaviour
 	private List<GameObject> flockers = new List<GameObject>();
 	public List<GameObject> Flockers {get{return flockers;}}
 
-	private List<GameObject> leaders = new List<GameObject>();
-	public List<GameObject> Leaders {get{return leaders;}}
-
-	private List<GameObject> predators = new List<GameObject>();
-	public List<GameObject> Predators {get{return predators;}}
-
-	// array of obstacles with accessor
-	private  GameObject[] obstacles;
-	public GameObject[] Obstacles {get{return obstacles;}}
-	
 	// this is a 2-dimensional array for distances between flockers
 	// it is recalculated each frame on update
 	private float[,] distances;
@@ -101,22 +91,6 @@ public class FlockManager : MonoBehaviour
 		leaderDistances = new float[numberOfLeaders, numberOfLeaders];
 		//reference to Vehicle script component for each flocker
 		Flocker flocker; // reference to flocker scripts
-		Leader leader;
-	
-		obstacles = GameObject.FindGameObjectsWithTag ("Obstacle");
-
-
-		for (int i = 0; i < numberOfLeaders; i++) {
-			//Instantiate a flocker prefab, catch the reference, cast it to a GameObject
-			//and add it to our list all in one line.
-			Vector3 pos = new Vector3(Random.Range(-Spread,Spread), Random.Range(-Spread,Spread), Random.Range(-Spread,Spread));
-
-			leaders.Add ((GameObject)Instantiate (LeaderPrefab, pos, Quaternion.identity));
-			//grab a component reference
-			leader = leaders [i].GetComponent<Leader> ();
-			//set values in the Vehicle script
-			leader.Index = i;
-		}
 
 		for (int i = 0; i < numberOfFlockers; i++) {
 			//Instantiate a flocker prefab, catch the reference, cast it to a GameObject
@@ -128,17 +102,6 @@ public class FlockManager : MonoBehaviour
 			flocker = flockers [i].GetComponent<Flocker> ();
 			//set values in the Vehicle script
 			flocker.Index = i;
-		}
-
-		//Creates predators in the same manner as flockers
-		for (int i = 0; i < NumPredators; i++) {
-			Vector3 pos = new Vector3(Random.Range(-Spread* 10,Spread*10), Random.Range(-Spread*10,Spread*10), Random.Range(-Spread*10,Spread*10));
-			
-			predators.Add ((GameObject)Instantiate (PredatorPrefab, pos, Quaternion.identity));
-			//grab a component reference
-			Predator predator= predators [i].GetComponent<Predator> ();
-			//set values in the Vehicle script
-			predator.Index = i;
 		}
 
 		centroidContainer.transform.position = new Vector3 (320, 30, 100);
@@ -175,20 +138,6 @@ public class FlockManager : MonoBehaviour
 				dist = Vector3.Distance(flockers[i].transform.position, flockers[j].transform.position);
 				distances[i, j] = dist;
 				distances[j, i] = dist;
-			}
-		}
-	}
-
-	void calcLeadDistances( )
-	{
-		float dist;
-		for(int i = 0 ; i < numberOfLeaders; i++)
-		{
-			for( int j = i+1; j < numberOfLeaders; j++)
-			{
-				dist = Vector3.Distance(leaders[i].transform.position, leaders[j].transform.position);
-				leaderDistances[i, j] = dist;
-				leaderDistances[j, i] = dist;
 			}
 		}
 	}

@@ -32,7 +32,7 @@ public class Flocker : Vehicle
 
 
 		obstacles = GameObject.FindGameObjectsWithTag ("Obstacle");
-		mainGO = GameObject.Find ("mainGO");
+		mainGO = GameObject.Find ("Main Camera");
 		gameManager = mainGO.GetComponent<GameManager>();
 
 		//get component references
@@ -84,39 +84,7 @@ public class Flocker : Vehicle
 		localCentroid /= localCount;
 		//Debug.DrawLine (transform.position,localCentroid, Color.red);
 	}
-
-	private Vector3 Follow()
-	{
-		float distBetween;
-		float closest = 1000;
-		int indexOf = 0;
-		//finds the closest leader and follows it
-		for (int i = 0; i < flockManager.Leaders.Count; i++) {
-			distBetween = flockManager.Distances[this.index, i];
-			if(distBetween < closest){
-				indexOf = i;
-				closest = distBetween;
-			}
-		}
-
-		Leader temp = flockManager.Leaders [indexOf].GetComponent<Leader> ();
-		Debug.DrawLine (transform.position, temp.FollowPoint,Color.green);
-		Debug.DrawLine (transform.position,transform.position + transform.forward, Color.red);
-
-		return Seek(temp.FollowPoint);
-	}
-
-	protected Vector3 PredatorCheck()
-	{
-		Vector3 fleeVector = Vector3.zero;
-		//Checks if a predator is within a threatening range, Flees from it if it is
-		for (int i = 0; i < flockManager.Predators.Count; i++) {
-			if(Vector3.Distance(transform.position, flockManager.Predators[i].transform.position) < flockManager.FleePredatorDist)
-				fleeVector += Flee (flockManager.Predators[i].transform.position)*500;
-		}
-		return fleeVector;
-	}
-
+	
 	 protected override void CalcSteeringForce ()
 	{
 		Vector3 force = Vector3.zero;
@@ -136,10 +104,6 @@ public class Flocker : Vehicle
 			for (int i=0; i<obstacles.Length; i++) {	
 				force += flockManager.avoidWt * AvoidObstacle (obstacles [i], gameManager.avoidDist);
 			}
-
-		force += Follow () * FollowWeight;
-
-		force += PredatorCheck ();
 
 		//limit force to maxForce and apply
 		force = Vector3.ClampMagnitude (force, maxForce);
