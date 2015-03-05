@@ -38,6 +38,8 @@ public class FireballScript : MonoBehaviour {
 	private int conversion;
 	public int lerpSpeed;
 
+	public float colorIntensity;
+
 	public float noiseThreshold;
 
 	AudioSource aud;
@@ -108,11 +110,15 @@ public class FireballScript : MonoBehaviour {
 					if(temp > 10)
 						temp = 10;
 					
-					fireballsArray[i,k].transform.localScale = new Vector3(0,0,0) + Vector3.Lerp(fireballsArray[i,k].transform.localScale, new Vector3(temp,temp,temp), Time.deltaTime * lerpSpeed);
+					fireballsArray[i,k].transform.localScale = new Vector3(0,0,0) + Vector3.Lerp(fireballsArray[i,k].transform.localScale, new Vector3(fireballsArray[i,k].transform.localScale.x,temp,fireballsArray[i,k].transform.localScale.z), Time.deltaTime * lerpSpeed);
+					fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color((1-Mathf.Pow(fireballsArray[i,k].transform.localScale.y,colorIntensity) * 1.2f), 0, 0), lerpSpeed);
+					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(fireballsArray[i,k].transform.localScale.x, 0, 0), lerpSpeed);
 				}
 				else
 				{
 					fireballsArray[i,k].transform.localScale = Vector3.Lerp(fireballsArray[i,k].transform.localScale, new Vector3(fireballsArray[i,k-1].transform.localScale.x,fireballsArray[i,k-1].transform.localScale.y,fireballsArray[i,k-1].transform.localScale.z), 0.75f);
+					fireballsArray[i,k].renderer.material.color = new Color((1-Mathf.Pow(fireballsArray[i,k].transform.localScale.y,colorIntensity) * 1.2f),0,0);
+					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(fireballsArray[i,k].transform.localScale.x, 0, 0), lerpSpeed);
 				}
 			}		
 		}
@@ -150,17 +156,16 @@ public class FireballScript : MonoBehaviour {
 					
 					fireballsArray[i,k].transform.position = Vector3.Lerp(fireballsArray[i,k].transform.position,fireballsArray[i,k].transform.position + temp, Time.deltaTime * lerpSpeed);
 					
-					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(temp.y, temp.y, temp.y), lerpSpeed);
+					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(temp.y, 0, 0), lerpSpeed);
 				}
 				else{
 					//if(i > 0)
 					fireballsArray[i,k].transform.position = Vector3.Lerp(fireballsArray[i,k].transform.position, new Vector3(fireballsArray[i,k].transform.position.x,fireballsArray[i,k-1].transform.position.y,fireballsArray[i,k].transform.position.z), 0.75f);
-					//fireballsArray[i,k].renderer.material.color = Color.Lerp(fireballsArray[i,k].renderer.material.color,fireballsArray[i,k-1].renderer.material.color, Time.deltaTime*lerpSpeed);
+					//fireballsArray[i,k].renderer.material.color = fireballsArray[i,k-1].renderer.material.color;
 				}
 					if (fireballsArray[i,k].transform.position.y - 2 < LowerBound)
 					fireballsArray[i,k].transform.position -= new Vector3(0,-16,0);
 			}
-
 		}
 	}
 
@@ -171,10 +176,10 @@ public class FireballScript : MonoBehaviour {
 
 		//audio.pitch two butons up and down
 		if (Input.GetKey (KeyCode.Q)) {
-			audio.pitch -= 0.01f;
+			aud.pitch -= 0.01f;
 		}
 		if (Input.GetKey (KeyCode.E)) {
-			audio.pitch += 0.01f;
+			aud.pitch += 0.01f;
 		}
 
 	}
