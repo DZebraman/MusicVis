@@ -47,8 +47,6 @@ public class FireballScript : MonoBehaviour {
 	//Start() happens once while the scene is loading
 	void Start () {
 
-
-
 		dispActual = 0;
 		//nextFireball = new int[2];
 
