@@ -51,7 +51,6 @@
      <Compile Include="Assets\Scripts\Flocker.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\MouseFollowMusic.cs" />
-     <Compile Include="Assets\Scripts\MusicFollow_Follower.cs" />
      <Compile Include="Assets\Scripts\ObstacleScript.cs" />
      <Compile Include="Assets\Scripts\Seeker.cs" />
      <Compile Include="Assets\Scripts\SmoothFollow.cs" />

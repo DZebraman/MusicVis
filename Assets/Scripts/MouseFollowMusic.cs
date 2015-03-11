@@ -9,15 +9,11 @@ public class MouseFollowMusic : MonoBehaviour {
 	//private int[] nextFireball; //Which index of fireBallsArray will get launched next?
 	private GameObject[] fireballsArray; //A 1D array of fireballs.
 	private Rigidbody[] rigidbodyArray;  //A 1D array of fireballs' rigidbodies.
-	private GameObject fireballSpawner;  //This is just an empty game object nested inside of our character 
-	public GameObject MainCam;
 	//that sets the spawn point for launched fireballs
 	
 	
 	//Rainbow Variables (Just copy paste all this stuff, it's a bit too tricky to explain right now)
 	public float[] rgb;
-	public float ballsPerPhase;
-	public  float skipThisMany;
 	public  int rainbowIndex;
 	
 	public GameObject thisObj;
@@ -40,7 +36,7 @@ public class MouseFollowMusic : MonoBehaviour {
 	
 	public float noiseThreshold;
 	
-	AudioSource aud;
+	public AudioSource aud;
 
 
 	protected Vector3 dv;
@@ -62,70 +58,66 @@ public class MouseFollowMusic : MonoBehaviour {
 			rigidbodyArray[i] = fireballsArray[i].GetComponent<Rigidbody>(); //Assigns our rigidbody REFERENCE IN THE ARRAY to look up this specific fireball's rigidbody
 		}
 		
-		aud = GetComponent<AudioSource>();
 
-		InvokeRepeating("ScaleToSound", 1.0f, .05f);
+
+		//InvokeRepeating("ScaleToSound", 1.0f, .05f);
+		aud = GetComponent<AudioSource>();
 	}
 
-	protected Vector3 Seek (Vector3 targetPos)
+	float NormalizeVolume(float[] spectrum)
 	{
-		//find dv, desired velocity
-		dv = targetPos - transform.position;		
-		dv = dv.normalized; 	//scale by maxSpeed
-		dv -= velocity;
-		return dv;
+		float avg = 0;
+		for (int i = 0; i < spectrum.Length; i++) {
+			avg += spectrum[i];
+		}
+		avg /= spectrum.Length;
+
+		return avg;
 	}
 
 	void ScaleToSound()
 	{
 		float[] spectrum = aud.GetSpectrumData(4096, 0, FFTWindow.Blackman);
-		conversion = spectrum.Length/(maxBalls/2);
+		conversion = spectrum.Length/(maxBalls);
 		float temp = 0;
-		
+		float avg = NormalizeVolume (spectrum);
+
 		for (int i = 0; i < maxBalls; i++) {
-				if(i == 0){
+
 					temp = 0;
 					temp += spectrum[i];
 					//temp /= conversion;
+					temp /= avg;		
+
+					temp *= scaleAmount * i;
+					temp /= 8;
+
+					if(temp <= 0.5f)
+						temp = 0.5f;
+					if(temp >= 8f)
+						temp = 8f;
 					
-					temp *= (scaleAmount/conversion);
-					temp *=	i;//*conversion * (i*3);
-					
-					if (temp < 1f)
-						temp = 1f;
-					
-					if(temp > 10)
-						temp = 10;
-					
-					fireballsArray[i].transform.localScale = new Vector3(0,0,0) + Vector3.Lerp(fireballsArray[i].transform.localScale, new Vector3(fireballsArray[i].transform.localScale.x,temp,fireballsArray[i].transform.localScale.z), Time.deltaTime * lerpSpeed);
-					fireballsArray[i].renderer.material.color = Color.Lerp(Color.black, new Color((1-Mathf.Pow(fireballsArray[i].transform.localScale.y,colorIntensity) * 1.2f), 0, 0), lerpSpeed);
-					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(fireballsArray[i,k].transform.localScale.x, 0, 0), lerpSpeed);
-				}
-				else
-				{
-					fireballsArray[i].transform.localScale = Vector3.Lerp(fireballsArray[i].transform.localScale, new Vector3(fireballsArray[i-1].transform.localScale.x,fireballsArray[i-1].transform.localScale.y,fireballsArray[i-1].transform.localScale.z), 0.75f);
-					fireballsArray[i].renderer.material.color = new Color((1-Mathf.Pow(fireballsArray[i].transform.localScale.y,colorIntensity) * 1.2f),0,0);
-					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(fireballsArray[i,k].transform.localScale.x, 0, 0), lerpSpeed);
-				}
+				fireballsArray[i].transform.localScale = new Vector3(0,0,0) + Vector3.Lerp(fireballsArray[i].transform.localScale, new Vector3(temp,temp,temp), Time.deltaTime * lerpSpeed*100);
+				fireballsArray[i].renderer.material.color = Color.Lerp(Color.black, new Color((1-Mathf.Pow(fireballsArray[i].transform.localScale.y,colorIntensity) * 1.2f), 0, 0), lerpSpeed);
+
 			}		
 		}
 
 	// Update is called once per frame
 	void Update () {
+	
 		Camera.main.GetComponent<SmoothFollow> ().target = fireballsArray[0].transform;
 
-		Debug.Log(Input.mousePosition.x + fireballsArray [0].transform.position.x + " " + Input.mousePosition.y + fireballsArray [0].transform.position.y);
-
-		Vector3 test = new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0);
+		Vector3 test = new Vector3 (Input.mousePosition.x , Input.mousePosition.y, 0);
 
 
 		for (int i = 0; i < fireballsArray.Length; i++) {
 			if( i < 1)	
-				fireballsArray[i].transform.position = Vector3.Lerp (fireballsArray [i].transform.position, test, lerpSpeed/1000 * Time.deltaTime);
+				fireballsArray[i].transform.position = Vector3.Lerp (fireballsArray [i].transform.position, test, lerpSpeed/500 * Time.deltaTime);
 			else
-				fireballsArray[i].transform.position = Vector3.Lerp(fireballsArray[i].transform.position, fireballsArray[i-1].transform.position, lerpSpeed * Time.deltaTime);
+				fireballsArray[i].transform.position = Vector3.Lerp(fireballsArray[i].transform.position, fireballsArray[i-1].transform.position, lerpSpeed * Time.deltaTime * 1.3f);
 		}
 
-
+		ScaleToSound ();
 	}
 }
