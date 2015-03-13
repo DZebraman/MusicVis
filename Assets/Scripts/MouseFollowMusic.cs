@@ -10,7 +10,8 @@ public class MouseFollowMusic : MonoBehaviour {
 	private GameObject[] fireballsArray; //A 1D array of fireballs.
 	private Rigidbody[] rigidbodyArray;  //A 1D array of fireballs' rigidbodies.
 	//that sets the spawn point for launched fireballs
-	
+
+	public float ScaleHarshness;
 	
 	//Rainbow Variables (Just copy paste all this stuff, it's a bit too tricky to explain right now)
 	public float[] rgb;
@@ -31,10 +32,11 @@ public class MouseFollowMusic : MonoBehaviour {
 	
 	private int conversion;
 	public float lerpSpeed;
+	public float followSpeed;
 	
 	public float colorIntensity;
 	
-	public float noiseThreshold;
+	public float bassThreshold;
 	
 	public AudioSource aud;
 
@@ -80,27 +82,49 @@ public class MouseFollowMusic : MonoBehaviour {
 		float[] spectrum = aud.GetSpectrumData(4096, 0, FFTWindow.Blackman);
 		conversion = spectrum.Length/(maxBalls);
 		float temp = 0;
+		float temp2 = 0;
 		float avg = NormalizeVolume (spectrum);
 
 		for (int i = 0; i < maxBalls; i++) {
+			temp = 0;
+			
+			for (int k = 0; k < conversion; k++) {
+				temp2 = 0;
+				temp2 += spectrum [(i * conversion) + k];
+				//temp /= conversion;
+//				if (temp2 < avg)
+//						temp2 /= avg;
+//				else {
+//						temp2 *= avg;
+//				}
 
-					temp = 0;
-					temp += spectrum[i];
-					//temp /= conversion;
-					temp /= avg;		
+				temp2 *= scaleAmount * ((i * conversion));
+				temp+= temp2;
+			}
 
-					temp *= scaleAmount * i;
-					temp /= 8;
+			temp /= conversion;
 
-					if(temp <= 0.5f)
-						temp = 0.5f;
-					if(temp >= 8f)
-						temp = 8f;
-					
-				fireballsArray[i].transform.localScale = new Vector3(0,0,0) + Vector3.Lerp(fireballsArray[i].transform.localScale, new Vector3(temp,temp,temp), Time.deltaTime * lerpSpeed*100);
-				fireballsArray[i].renderer.material.color = Color.Lerp(Color.black, new Color((1-Mathf.Pow(fireballsArray[i].transform.localScale.y,colorIntensity) * 1.2f), 0, 0), lerpSpeed);
 
-			}		
+			//temp = Mathf.Clamp(temp,0.2f,8);
+
+			temp *= 10;
+
+			temp = Mathf.Pow(temp, ScaleHarshness);
+
+			temp /= 10;
+
+			temp = Mathf.Clamp(temp,0.2f,10);
+
+			fireballsArray [i].transform.localScale = new Vector3 (0, 0, 0) + Vector3.Lerp (fireballsArray [i].transform.localScale, new Vector3 (temp, temp, temp), Time.deltaTime * lerpSpeed);
+			fireballsArray [i].renderer.material.color = Color.Lerp (Color.black, new Color ((1 - Mathf.Pow (fireballsArray [i].transform.localScale.y, colorIntensity) * 1.2f), 0, 0), lerpSpeed);
+
+			if (temp > 6) {
+			fireballsArray [i].GetComponent<ParticleSystem> ().enableEmission = true;
+				fireballsArray [i].GetComponent<ParticleSystem> ().startSpeed = fireballsArray [i].transform.localScale.y * 3;
+				fireballsArray [i].GetComponent<ParticleSystem> ().startLifetime = fireballsArray [i].transform.localScale.y / 8;
+			} else
+					fireballsArray [i].GetComponent<ParticleSystem> ().enableEmission = false;
+			}
 		}
 
 	// Update is called once per frame
@@ -110,14 +134,23 @@ public class MouseFollowMusic : MonoBehaviour {
 
 		Vector3 test = new Vector3 (Input.mousePosition.x , Input.mousePosition.y, 0);
 
-
-		for (int i = 0; i < fireballsArray.Length; i++) {
-			if( i < 1)	
-				fireballsArray[i].transform.position = Vector3.Lerp (fireballsArray [i].transform.position, test, lerpSpeed/500 * Time.deltaTime);
-			else
-				fireballsArray[i].transform.position = Vector3.Lerp(fireballsArray[i].transform.position, fireballsArray[i-1].transform.position, lerpSpeed * Time.deltaTime * 1.3f);
+		float[] spectrum = aud.GetSpectrumData(2048, 0, FFTWindow.Blackman);
+		float bassLoud = 0;
+		for(int i = 0; i < 64; i++)
+		{
+			bassLoud += spectrum[i];
 		}
 
+		bassLoud /= 64;
+
+		if(bassLoud > bassThreshold){
+			for (int i = 0; i < fireballsArray.Length; i++) {
+				if( i < 1)	
+					fireballsArray[i].transform.position = Vector3.Lerp (fireballsArray [i].transform.position, test, followSpeed/500 * Time.deltaTime);
+				else
+					fireballsArray[i].transform.position = Vector3.Lerp(fireballsArray[i].transform.position, fireballsArray[i-1].transform.position, followSpeed * Time.deltaTime * 1.3f);
+			}
+		}
 		ScaleToSound ();
 	}
 }
