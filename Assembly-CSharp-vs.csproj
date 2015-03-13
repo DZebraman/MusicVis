@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\ObstacleScript.cs" />
      <Compile Include="Assets\Scripts\Seeker.cs" />
      <Compile Include="Assets\Scripts\SmoothFollow.cs" />
+     <Compile Include="Assets\Scripts\Sphere_Vis.cs" />
      <Compile Include="Assets\Scripts\Vehicle.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
