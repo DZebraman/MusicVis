@@ -52,6 +52,7 @@
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\MouseFollowMusic.cs" />
      <Compile Include="Assets\Scripts\ObstacleScript.cs" />
+     <Compile Include="Assets\Scripts\QuickCameraMovement.cs" />
      <Compile Include="Assets\Scripts\Seeker.cs" />
      <Compile Include="Assets\Scripts\SmoothFollow.cs" />
      <Compile Include="Assets\Scripts\Sphere_Vis.cs" />
