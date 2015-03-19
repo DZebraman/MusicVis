@@ -109,7 +109,7 @@ public class Sphere_Vis : MonoBehaviour {
 			temp = Mathf.Clamp(temp,0.2f,10);
 			
 			boxArray [i].transform.localScale = new Vector3 (0, 0, 0) + Vector3.Lerp (boxArray [i].transform.localScale, new Vector3 (temp, temp, temp), Time.deltaTime * lerpSpeed);
-			boxArray [i].renderer.material.color = Color.Lerp (Color.black, new Color ((1 - Mathf.Pow (temp* -colorIntensity, colorIntensity) * 1.2f), 0, 0), lerpSpeed);
+			boxArray [i].renderer.material.color = Color.Lerp (Color.black, new Color ((1 - Mathf.Pow (temp, colorIntensity) * 1.2f), 0, 0), lerpSpeed);
 		}
 	}
 
