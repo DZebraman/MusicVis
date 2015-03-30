@@ -7,7 +7,7 @@ public class Sphere_Vis : MonoBehaviour {
 
 	private GameObject[,] boxArray;
 	private GameObject[] borders;
-	private Vector3[] ogPosition;
+	private Vector3[,] ogPosition;
 
 
 	private int numCircles;
@@ -22,6 +22,9 @@ public class Sphere_Vis : MonoBehaviour {
 
 	public int rows;
 	public int colums;
+	
+	public float noiseThreshold;
+	public float rotationSpeed;
 
 	public float scaleAmount;
 	public float ScaleHarshness;
@@ -33,6 +36,10 @@ public class Sphere_Vis : MonoBehaviour {
 
 	public int lowCut;
 	public int highCut;
+
+	private Vector3 fromCenter;
+	public float dispAmount;
+	public float DispBound;
 
 	// Use this for initialization
 	void Start () {
@@ -47,11 +54,11 @@ public class Sphere_Vis : MonoBehaviour {
 
 		//boxArray = new GameObject[numBoxes*numBoxes];
 		boxArray = new GameObject[numCircles,numBoxes];
-		ogPosition = new Vector3[numCircles];
+		ogPosition = new Vector3[numCircles,numBoxes];
 		for(int k = 0; k < numCircles; k++)
 		{
 			boxArray[k,0] =(GameObject)Instantiate(Resources.Load("Sphere-Cube"),new Vector3(0, 0, 0), Quaternion.identity);
-			((GameObject)(boxArray[k,0])).renderer.enabled = false;
+			((GameObject)(boxArray[k,0])).GetComponent<Renderer>().enabled = false;
 			for(int i = 1; i < numBoxes; i++)
 			{
 				p1 = (i+1 * 1.0f) / numBoxes-1;
@@ -86,13 +93,18 @@ public class Sphere_Vis : MonoBehaviour {
 			{
 				boxArray[(i*colums)+k,0].transform.position = new Vector3(i*(2*radius) * margin,k*(2*radius) * margin,-0.5f);
 				boxArray[(i*colums)+k,0].transform.RotateAround(boxArray[(i*colums)+k,0].transform.position,Vector3.forward,Random.Range(0,10000));
-				ogPosition[(i*colums)+k] = boxArray[(i*colums)+k,0].transform.position;
+
 				//boxArray[(i*colums)+k,0].transform.position = Quaternion.AngleAxis(Random.Range(0,10), Vector3.forward) * boxArray[(i*colums)+k,0].transform.position;
 				//else
 					//boxArray[(i*3)+k,0].transform.position = new Vector3((i*(2*radius)) + margin,(k*(2*radius)) + margin,0);
 			}
 		}
 
+		for (int i = 0; i < numCircles; i++) {
+			for (int k = 0; k < numBoxes; k++) {
+				ogPosition[i,k] = boxArray[i,k].transform.position;
+			}
+		}
 
 		borders[0] = (GameObject)Instantiate(Resources.Load("Border"), new Vector3(rows/2 *(2*radius) * margin, colums*(2*radius) * margin, -5.999998f), Quaternion.identity);
 		borders[0].transform.localScale = new Vector3(rows*(2*radius) * margin,1,1);
@@ -136,10 +148,28 @@ public class Sphere_Vis : MonoBehaviour {
 		float temp2 = 0;
 		float avg = NormalizeVolume (spectrum);
 
+		float fromOg;
+
+		if (spectrum [(int)(spectrum.Length * 0.9)] > noiseThreshold) {
+						for (int i = 0; i < rows; i++) {
+								for (int k = 0; k < colums; k++) {
+										//boxArray[(i*colums)+k,0].transform.position = new Vector3(i*(2*radius) * margin,k*(2*radius) * margin,-0.5f);
+										boxArray [(i * colums) + k, 0].transform.RotateAround (boxArray [(i * colums) + k, 0].transform.position, Vector3.forward, rotationSpeed);
+										//ogPosition[(i*colums)+k] = boxArray[(i*colums)+k,0].transform.position;
+										//boxArray[(i*colums)+k,0].transform.position = Quaternion.AngleAxis(Random.Range(0,10), Vector3.forward) * boxArray[(i*colums)+k,0].transform.position;
+										//else
+										//boxArray[(i*3)+k,0].transform.position = new Vector3((i*(2*radius)) + margin,(k*(2*radius)) + margin,0);
+								}
+						}
+				}
 		for(int z = 0; z < numCircles; z++){
 
 		for (int i = 1; i < numBoxes; i++) {
-			if(boxArray[z,i].renderer.isVisible){
+			if(boxArray[z,i].GetComponent<Renderer>().isVisible){
+				
+
+				
+				
 				temp = 0;
 				System.Array.Copy (spectrum, lowCut, modFreq,0,(long)(highCut - lowCut));
 				conversion = modFreq.Length/(numBoxes);
@@ -158,6 +188,15 @@ public class Sphere_Vis : MonoBehaviour {
 					temp+= temp2;
 				}
 				
+				fromOg = Vector3.Distance(boxArray[z,i].transform.position,ogPosition[z,i]);
+				if(fromOg < DispBound){
+				fromCenter = boxArray[z,0].transform.position - boxArray[z,i].transform.position;
+				fromCenter.Normalize();
+				fromCenter *= dispAmount * temp;
+
+				boxArray[z,i].transform.position = Vector3.Lerp(boxArray[z,i].transform.position,boxArray[z,i].transform.position + fromCenter, lerpSpeed);
+				}
+
 				temp /= conversion;
 				//Debug.Log(temp);
 				
@@ -175,9 +214,9 @@ public class Sphere_Vis : MonoBehaviour {
 				
 				//if(Random.Range (0,2)  == 0)
 				if(z%2  == 0)
-					boxArray [z,i].renderer.material.color = Color.Lerp (Color.black, new Color (Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230), 0, 0), lerpSpeed);
+					boxArray [z,i].GetComponent<Renderer>().material.color = Color.Lerp (Color.black, new Color (Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230), 0, 0), lerpSpeed);
 				else
-						boxArray [z,i].renderer.material.color = Color.Lerp (Color.black, new Color (0, 0, Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230)), lerpSpeed);
+						boxArray [z,i].GetComponent<Renderer>().material.color = Color.Lerp (Color.black, new Color (0, 0, Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230)), lerpSpeed);
 				}
 			}
 		}
@@ -189,25 +228,25 @@ public class Sphere_Vis : MonoBehaviour {
 		float distFromOG;
 		Vector3 toCam;
 		
-		for(int i = 0; i < numCircles; i++)
-		{
-			if(boxArray[i,1].renderer.isVisible){
-				toCam = Camera.main.transform.position - boxArray[i,0].transform.position;
-				toCam /= toCam.magnitude;
-				distToCam =  Vector3.Distance(Camera.main.transform.position, boxArray[i,0].transform.position);
-				distFromOG = Vector3.Distance(boxArray[i,0].transform.position, ogPosition[i]);
-				
-				if(distToCam <= fromCamDist){
-					//boxArray[i,0].transform.position = Vector3.Lerp(boxArray[i,0].transform.position,Camera.main.transform.position,(circleLerp*distToCam) * Time.deltaTime);
-					//boxArray[i,0].transform.position = Vector3.Lerp(boxArray[i,0].transform.position,boxArray[i,0].transform.position + (toCam * distToCam),(circleLerp*distToCam) * Time.deltaTime);
-					boxArray[i,0].transform.position = new Vector3(0,0,boxArray[i,0].transform.position.z-(0.2f * distToCam));
-				}
-				else{
-					//boxArray[i,0].transform.position = Vector3.Lerp(boxArray[i,0].transform.position,ogPosition[i],circleLerp * Time.deltaTime);
-					boxArray[i,0].transform.position = ogPosition[i];
-				}
-			}
-		}
+//		for(int i = 0; i < numCircles; i++)
+//		{
+//			if(boxArray[i,1].GetComponent<Renderer>().isVisible){
+//				toCam = Camera.main.transform.position - boxArray[i,0].transform.position;
+//				toCam /= toCam.magnitude;
+//				distToCam =  Vector3.Distance(Camera.main.transform.position, boxArray[i,0].transform.position);
+//				distFromOG = Vector3.Distance(boxArray[i,0].transform.position, ogPosition[i]);
+//				
+//				if(distToCam <= fromCamDist){
+//					//boxArray[i,0].transform.position = Vector3.Lerp(boxArray[i,0].transform.position,Camera.main.transform.position,(circleLerp*distToCam) * Time.deltaTime);
+//					//boxArray[i,0].transform.position = Vector3.Lerp(boxArray[i,0].transform.position,boxArray[i,0].transform.position + (toCam * distToCam),(circleLerp*distToCam) * Time.deltaTime);
+//					boxArray[i,0].transform.position = new Vector3(0,0,boxArray[i,0].transform.position.z-(0.2f * distToCam));
+//				}
+//				else{
+//					//boxArray[i,0].transform.position = Vector3.Lerp(boxArray[i,0].transform.position,ogPosition[i],circleLerp * Time.deltaTime);
+//					boxArray[i,0].transform.position = ogPosition[i];
+//				}
+//			}
+//		}
 	}
 
 	// Update is called once per frame
