@@ -13,7 +13,7 @@ public class QuickCameraMovement : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		butts = (GameObject)Instantiate(Resources.Load("Sphere-Cube"),new Vector3(0, 0, 0), Quaternion.identity);
-		butts.GetComponent<Renderer>().enabled = false;
+		butts.renderer.enabled = false;
 		toFollow.GetComponent<SmoothFollow> ().target = butts.transform;
 	}
 	

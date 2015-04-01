@@ -72,7 +72,7 @@ public class MouseFollowMusic : MonoBehaviour {
 			}
 		}
 		
-		fireballsArray [0].GetComponent<Renderer> ().material.color = Color.black;
+
 
 		//InvokeRepeating("ScaleToSound", 1.0f, .05f);
 		aud = GetComponent<AudioSource>();
@@ -101,7 +101,7 @@ public class MouseFollowMusic : MonoBehaviour {
 		float avg = NormalizeVolume (spectrum);
 		
 		for (int i = 1; i < maxBalls; i++) {
-				if(fireballsArray[i].GetComponent<Renderer>().isVisible){
+				if(fireballsArray[i].renderer.isVisible){
 					temp = 0;
 					System.Array.Copy (spectrum, lowCut, modFreq,0,(long)(highCut - lowCut));
 					conversion = modFreq.Length/(maxBalls);
@@ -135,7 +135,7 @@ public class MouseFollowMusic : MonoBehaviour {
 					
 					fireballsArray [i].transform.localScale = new Vector3 (0, 0, 0) + Vector3.Lerp (fireballsArray[i].transform.localScale, new Vector3 (temp, temp, temp), Time.deltaTime * lerpSpeed);
 
-					fireballsArray [i].GetComponent<Renderer>().material.color = Color.Lerp (Color.black, new Color (Mathf.Clamp(Mathf.Pow(fireballsArray[i].transform.localScale.z,1.2f) * colorIntensity,0,230), 0, 0), lerpSpeed);
+					fireballsArray [i].renderer.material.color = Color.Lerp (Color.black, new Color (Mathf.Clamp(Mathf.Pow(fireballsArray[i].transform.localScale.z,1.2f) * colorIntensity,0,230), 0, 0), lerpSpeed);
 
 					if (temp > 6) {
 								fireballsArray [i].GetComponent<ParticleSystem> ().enableEmission = true;
@@ -202,8 +202,6 @@ public class MouseFollowMusic : MonoBehaviour {
 	void Update () {
 	
 		Camera.main.GetComponent<SmoothFollow> ().target = fireballsArray[0].transform;
-		GameObject light = GameObject.Find("Light");
-		light.GetComponent<SmoothFollow>().target = fireballsArray[0].transform;
 
 		Vector3 test = new Vector3 (Input.mousePosition.x , Input.mousePosition.y, 0);
 
