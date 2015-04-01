@@ -109,13 +109,13 @@ public class FireballScript : MonoBehaviour {
 						temp = 10;
 					
 					fireballsArray[i,k].transform.localScale = new Vector3(0,0,0) + Vector3.Lerp(fireballsArray[i,k].transform.localScale, new Vector3(fireballsArray[i,k].transform.localScale.x,temp,fireballsArray[i,k].transform.localScale.z), Time.deltaTime * lerpSpeed);
-					fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color((1-Mathf.Pow(fireballsArray[i,k].transform.localScale.y,colorIntensity) * 1.2f), 0, 0), lerpSpeed);
+					fireballsArray[i,k].GetComponent<Renderer>().material.color = Color.Lerp(Color.black, new Color((1-Mathf.Pow(fireballsArray[i,k].transform.localScale.y,colorIntensity) * 1.2f), 0, 0), lerpSpeed);
 					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(fireballsArray[i,k].transform.localScale.x, 0, 0), lerpSpeed);
 				}
 				else
 				{
 					fireballsArray[i,k].transform.localScale = Vector3.Lerp(fireballsArray[i,k].transform.localScale, new Vector3(fireballsArray[i,k-1].transform.localScale.x,fireballsArray[i,k-1].transform.localScale.y,fireballsArray[i,k-1].transform.localScale.z), 0.75f);
-					fireballsArray[i,k].renderer.material.color = new Color((1-Mathf.Pow(fireballsArray[i,k].transform.localScale.y,colorIntensity) * 1.2f),0,0);
+					fireballsArray[i,k].GetComponent<Renderer>().material.color = new Color((1-Mathf.Pow(fireballsArray[i,k].transform.localScale.y,colorIntensity) * 1.2f),0,0);
 					//fireballsArray[i,k].renderer.material.color = Color.Lerp(Color.black, new Color(fireballsArray[i,k].transform.localScale.x, 0, 0), lerpSpeed);
 				}
 			}		
