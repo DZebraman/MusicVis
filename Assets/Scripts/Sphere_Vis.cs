@@ -171,14 +171,14 @@ public class Sphere_Vis : MonoBehaviour {
 				
 				temp = Mathf.Clamp(temp,0.2f,80);
 				
-				boxArray [z,i].transform.localScale = new Vector3 (0, 0, 0) + Vector3.Lerp (boxArray [z,i].transform.localScale, new Vector3 (temp/(numBoxes/3f), temp/(numBoxes/3f), temp), Time.deltaTime * lerpSpeed);
+				//boxArray [z,i].transform.localScale = new Vector3 (0, 0, 0) + Vector3.Lerp (boxArray [z,i].transform.localScale, new Vector3 (temp/(numBoxes/3f), temp/(numBoxes/3f), temp), Time.deltaTime * lerpSpeed);
 				
 				//if(Random.Range (0,2)  == 0)
-				if(z%2  == 0)
-					boxArray [z,i].renderer.material.color = Color.Lerp (Color.black, new Color (Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230), 0, 0), lerpSpeed);
-				else
-						boxArray [z,i].renderer.material.color = Color.Lerp (Color.black, new Color (0, 0, Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230)), lerpSpeed);
-				}
+//				if(z%2  == 0)
+//					/boxArray [z,i].renderer.material.color = Color.Lerp (Color.black, new Color (Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230), 0, 0), lerpSpeed);
+//				else
+//						boxArray [z,i].renderer.material.color = Color.Lerp (Color.black, new Color (0, 0, Mathf.Clamp(Mathf.Pow(boxArray [z,i].transform.localScale.z,1.2f) * colorIntensity,0,230)), lerpSpeed);
+//				}
 			}
 		}
 	}
