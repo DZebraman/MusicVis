@@ -97,7 +97,7 @@ public class Sphere_Vis : MonoBehaviour {
 		}
 
 
-		borders[0] = (GameObject)Instantiate(Resources.Load("Border"), new Vector3(rows/2 *(2*radius) * margin, colums*(2*radius) * margin, -5.999998f), Quaternion.identity);
+		borders[0] = (GameObject)Instantiate(Resources.Load("Border"), new Vector3(rows/2 *(2*radius) * margin - 2*margin, colums*(2*radius) * margin - 2 * margin, -5.999998f), Quaternion.identity);
 		borders[0].transform.localScale = new Vector3(rows*(2*radius) * margin,1,1);
 		borders[0].name = "Border " + 0;
 

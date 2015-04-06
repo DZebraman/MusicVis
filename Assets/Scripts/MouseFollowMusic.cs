@@ -60,19 +60,19 @@ public class MouseFollowMusic : MonoBehaviour {
 		for (int i = 0; i < maxBalls; i++){ //Iterates through every fireball reference, instantiating a prefab and assigning it a GameObject reference in our 1D array 
 
 			if(i > 0){
-				fireballsArray[i] = (GameObject)Instantiate(Resources.Load("fireballPrefab"), new Vector3(i*3, 0, 0), Quaternion.identity); 
+				fireballsArray[i] = (GameObject)Instantiate(Resources.Load("fireballPrefab"), new Vector3(i*3, 0, -6), Quaternion.identity); 
 				fireballsArray[i].name = "Snake " + i; //Names the prefab (visible in hierarchy window) 
 				rigidbodyArray[i] = fireballsArray[i].GetComponent<Rigidbody>(); //Assigns our rigidbody REFERENCE IN THE ARRAY to look up this specific fireball's rigidbody
 			}
 			else
 			{
-				fireballsArray[i] = (GameObject)Instantiate(Resources.Load("Snake-Leader"), new Vector3(i*3, 0, 0), Quaternion.identity); 
+				fireballsArray[i] = (GameObject)Instantiate(Resources.Load("Snake-Leader"), new Vector3(i*3, 0, -6), Quaternion.identity); 
 				fireballsArray[i].name = "Leader " + i; //Names the prefab (visible in hierarchy window) 
 				rigidbodyArray[i] = fireballsArray[i].GetComponent<Rigidbody>();
 			}
 		}
 		
-
+		Camera.main.GetComponent<SmoothFollow> ().target = fireballsArray[0].transform;
 
 		//InvokeRepeating("ScaleToSound", 1.0f, .05f);
 		aud = GetComponent<AudioSource>();
@@ -136,15 +136,7 @@ public class MouseFollowMusic : MonoBehaviour {
 					fireballsArray [i].transform.localScale = new Vector3 (0, 0, 0) + Vector3.Lerp (fireballsArray[i].transform.localScale, new Vector3 (temp, temp, temp), Time.deltaTime * lerpSpeed);
 
 					fireballsArray [i].renderer.material.color = Color.Lerp (Color.black, new Color (Mathf.Clamp(Mathf.Pow(fireballsArray[i].transform.localScale.z,1.2f) * colorIntensity,0,230), 0, 0), lerpSpeed);
-
-					if (temp > 6) {
-								fireballsArray [i].GetComponent<ParticleSystem> ().enableEmission = true;
-									fireballsArray [i].GetComponent<ParticleSystem> ().startSpeed = fireballsArray [i].transform.localScale.y * 3;
-									fireballsArray [i].GetComponent<ParticleSystem> ().startLifetime = fireballsArray [i].transform.localScale.y / 8;
-								} else
-										fireballsArray [i].GetComponent<ParticleSystem> ().enableEmission = false;
-								
-				}
+			}
 			}
 		}
 

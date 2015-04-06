@@ -10,6 +10,8 @@ public class QuickCameraMovement : MonoBehaviour {
 	private Vector3 v;
 	private Vector3 a;
 
+
+
 	// Use this for initialization
 	void Start () {
 		butts = (GameObject)Instantiate(Resources.Load("Sphere-Cube"),new Vector3(0, 0, 0), Quaternion.identity);
